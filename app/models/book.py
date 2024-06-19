@@ -10,6 +10,13 @@ class BookBase(SQLModel):
     title: str
     author: str
 
+    @field_validator('id', mode='before')
+    @classmethod
+    def check_id(cls, value):
+        if not value.isnumeric():
+            raise ValueError('Invalid book id')
+        return value
+
 
 class BookCreate(BookBase):
     pass
@@ -21,10 +28,12 @@ class BookUpdate(SQLModel):
 
     @field_validator('loanee_id', mode='before')
     @classmethod
-    def empty_str_to_none(cls, v):
-        if v == '':
+    def empty_str_to_none(cls, value):
+        if not value.isnumeric():
+            raise ValueError('Invalid loanee id')
+        if value == '':
             return None
-        return v
+        return value
 
     @model_validator(mode='before')
     @classmethod
